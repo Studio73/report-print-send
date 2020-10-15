@@ -8,10 +8,11 @@ To configure this module, you need to:
 It's also possible to add a label printing wizard on any model by creating a new *ir.actions.act_window* record.
 For example, to add the printing wizard on the *product.product* model ::
 
-    <act_window id="action_wizard_purchase"
-      name="Print Label"
-      src_model="product.product"
-      res_model="wizard.print.record.label"
-      view_mode="form"
-      target="new"
-      key2="client_action_multi"/>
+    <record model="ir.actions.act_window" id="action_wizard_purchase">
+      <field name="name">Print Label</field>
+      <field name="res_model">wizard.print.record.label</field>
+      <field name="view_mode">form</field>
+      <field name="src_model">product.product</field>
+      <field name="target">new</field>
+      <field name="key2">client_action_multi</field>
+    </record>

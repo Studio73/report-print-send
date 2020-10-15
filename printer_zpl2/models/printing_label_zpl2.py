@@ -2,11 +2,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import base64
-import datetime
 import io
 import itertools
 import logging
-import time
 from collections import defaultdict
 
 import requests
@@ -14,7 +12,7 @@ from PIL import Image, ImageOps
 
 from odoo import _, api, exceptions, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
+from odoo.tools.safe_eval import safe_eval, time, datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -37,6 +35,7 @@ class PrintingLabelZpl2(models.Model):
         string="Model",
         required=True,
         help="Model used to print this label.",
+        ondelete="cascade",
     )
     origin_x = fields.Integer(
         required=True,
@@ -96,7 +95,7 @@ class PrintingLabelZpl2(models.Model):
     def check_recursion(self):
         cr = self._cr
         self.flush(["component_ids"])
-        query = (  # pylint: disable=E8103
+        query = (
             'SELECT "{}", "{}" FROM "{}" '
             'WHERE "{}" IN %s AND "{}" IS NOT NULL'.format(
                 "label_id",
@@ -111,7 +110,7 @@ class PrintingLabelZpl2(models.Model):
         preds = defaultdict(set)  # transitive closure of predecessors
         todo, done = set(self.ids), set()
         while todo:
-            cr.execute(query, [tuple(todo)])
+            cr.execute(query, [tuple(todo)])  # pylint: disable=E8103
             done.update(todo)
             todo.clear()
             for id1, id2 in cr.fetchall():

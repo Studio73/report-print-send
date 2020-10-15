@@ -15,7 +15,7 @@
                         name="label_id"
                         context="{'default_model_id': active_model_id}"
                     />
-                    <field name="active_model_id" invisible="1" />
+                    <field name="active_model_id" attrs="{'invisible': True}" />
                 </group>
                 <footer>
                     <button type="special" special="cancel" string="Cancel" />

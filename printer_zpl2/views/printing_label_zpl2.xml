@@ -28,8 +28,8 @@
                         attrs="{'invisible': [('active', '=', True)]}"
                     />
                     <div class="oe_button_box" name="button_box">
-                        <field name="active" invisible="1" />
-                        <field name="action_window_id" invisible="1" />
+                        <field name="active" attrs="{'invisible': True}" />
+                        <field name="action_window_id" attrs="{'invisible': True}" />
                         <button
                             name="create_action"
                             string="Add in the 'Action' menu"
@@ -110,7 +110,7 @@
                                         <group>
                                             <field name="name" />
                                             <field name="sequence" />
-                                            <field name="model_id" invisible="1" />
+                                            <field name="model_id" attrs="{'invisible': True}" />
                                         </group>
                                         <group>
                                             <field name="component_type" />

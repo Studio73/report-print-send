@@ -260,7 +260,8 @@
                                     force_save="1"
                                 />
                                 <p class="oe_grey" colspan="4">
-                                    Note : It is an emulation from http://labelary.com/, the result on printer can be different.
+                                    Note : It is an emulation from http://labelary.com/,
+                                    the result on printer can be different.
                                 </p>
                             </group>
                         </page>

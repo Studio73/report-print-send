@@ -5,11 +5,9 @@
         <field name="model">printing.printer.update.wizard</field>
         <field name="arch" type="xml">
             <form string="Update Printers from CUPS">
-                <label
-                    string="This process will create all missing printers from the current CUPS server."
-                    colspan="2"
-                    for=""
-                />
+                <div class="o_form_label" colspan="2">
+                    This process will create all missing printers from the current CUPS server.
+                </div>
                 <footer>
                     <button
                         name="action_ok"

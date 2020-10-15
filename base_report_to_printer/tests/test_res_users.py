@@ -4,8 +4,7 @@
 from odoo.tests import common
 
 
-@common.at_install(False)
-@common.post_install(True)
+@common.tagged("-at_install", "post_install")
 class TestResUsers(common.TransactionCase):
     def setUp(self):
         super(TestResUsers, self).setUp()

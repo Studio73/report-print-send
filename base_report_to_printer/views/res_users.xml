@@ -20,10 +20,10 @@
         <field name="arch" type="xml">
             <footer position="before">
                 <group string="Printing" name="printing">
-                    <field name="printing_action" readonly="0" />
+                    <field name="printing_action" attrs="{'readonly': False}" />
                     <field
                         name="printing_printer_id"
-                        readonly="0"
+                        attrs="{'readonly': False}"
                         options="{'no_create': True}"
                     />
                 </group>

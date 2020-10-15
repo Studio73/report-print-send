@@ -8,8 +8,7 @@ from odoo import exceptions
 from odoo.tests import common
 
 
-@common.at_install(False)
-@common.post_install(True)
+@common.tagged("-at_install", "post_install")
 class TestReport(common.HttpCase):
     def setUp(self):
         super(TestReport, self).setUp()
@@ -88,7 +87,7 @@ class TestReport(common.HttpCase):
             "printing_printer.PrintingPrinter."
             "print_document"
         ) as print_document:
-            self.report.render_qweb_pdf(self.partners.ids)
+            self.report._render_qweb_pdf(self.partners.ids)
             print_document.assert_not_called()
 
     def test_render_qweb_pdf_printable(self):
@@ -100,7 +99,7 @@ class TestReport(common.HttpCase):
         ) as print_document:
             self.report.property_printing_action_id.action_type = "server"
             self.report.printing_printer_id = self.new_printer()
-            document = self.report.render_qweb_pdf(self.partners.ids)
+            document = self.report._render_qweb_pdf(self.partners.ids)
             print_document.assert_called_once_with(
                 self.report,
                 document[0],

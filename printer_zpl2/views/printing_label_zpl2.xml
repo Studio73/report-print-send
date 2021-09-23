@@ -58,6 +58,14 @@
                         <field name="origin_y" />
                         <field name="restore_saved_config" />
                     </group>
+                    <group>
+                        <field name="label_action_ids">
+                            <tree editable="top">
+                                <field name="user_id" />
+                                <field name="printer_id" />
+                            </tree>
+                        </field>
+                    </group>
                     <group attrs="{'invisible':[('test_print_mode', '=', False)]}">
                         <button
                             name="print_test_label"

@@ -65,9 +65,7 @@ class PrintingLabelZpl2(models.Model):
         default=True,
     )
     action_window_id = fields.Many2one(
-        comodel_name="ir.actions.act_window",
-        string="Action",
-        readonly=True,
+        comodel_name="ir.actions.act_window", string="Action", readonly=True
     )
     test_print_mode = fields.Boolean(string="Mode Print")
     test_labelary_mode = fields.Boolean(string="Mode Labelary")
@@ -90,6 +88,11 @@ class PrintingLabelZpl2(models.Model):
     )
     labelary_width = fields.Float(string="Width in mm", default=140)
     labelary_height = fields.Float(string="Height in mm", default=70)
+    label_action_ids = fields.One2many(
+        comodel_name="printing.label.zpl2.action",
+        string="Impresoras especificas por usuario",
+        inverse_name="label_id",
+    )
 
     @api.constrains("component_ids")
     def check_recursion(self):
@@ -359,6 +362,11 @@ class PrintingLabelZpl2(models.Model):
 
     def print_label(self, printer, record, page_count=1, **extra):
         for label in self:
+            label_action_id = label.label_action_ids.filtered(
+                lambda l: l.user_id.id == self.env.user.id
+            )
+            if label_action_id:
+                printer = label_action_id[0].printer_id
             if record._name != label.model_id.model:
                 raise exceptions.UserError(
                     _("This label cannot be used on {model}").format(model=record._name)

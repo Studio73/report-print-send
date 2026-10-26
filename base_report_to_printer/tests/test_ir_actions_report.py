@@ -4,12 +4,12 @@
 
 from unittest import mock
 
-from odoo.tests.common import TransactionCase
+from .common import ReportToPrinterCommon
 
 model = "odoo.addons.base.models.ir_actions_report.IrActionsReport"
 
 
-class TestIrActionsReportXml(TransactionCase):
+class TestIrActionsReportXml(ReportToPrinterCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -41,20 +41,6 @@ class TestIrActionsReportXml(TransactionCase):
                 "report_id": self.report.id,
                 "user_id": self.demo_user.id,
                 "action": "server",
-            }
-        )
-
-    def new_printer(self):
-        return self.env["printing.printer"].create(
-            {
-                "name": "Printer",
-                "system_name": "Sys Name",
-                "default": True,
-                "status": "unknown",
-                "status_message": "Msg",
-                "model": "res.users",
-                "location": "Location",
-                "uri": "URI",
             }
         )
 

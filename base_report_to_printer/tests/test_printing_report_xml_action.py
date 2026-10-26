@@ -1,10 +1,10 @@
 # Copyright 2016 SYLEAM
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tests.common import TransactionCase
+from .common import ReportToPrinterCommon
 
 
-class TestPrintingReportXmlAction(TransactionCase):
+class TestPrintingReportXmlAction(ReportToPrinterCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -34,20 +34,6 @@ class TestPrintingReportXmlAction(TransactionCase):
             values.update(vals)
 
         return self.Model.create(values)
-
-    def new_printer(self):
-        return self.env["printing.printer"].create(
-            {
-                "name": "Printer",
-                "system_name": "Sys Name",
-                "default": True,
-                "status": "unknown",
-                "status_message": "Msg",
-                "model": "res.users",
-                "location": "Location",
-                "uri": "URI",
-            }
-        )
 
     def test_behaviour(self):
         """It should return some action's data, unless called on empty
@@ -89,18 +75,7 @@ class TestPrintingReportXmlAction(TransactionCase):
         self.assertFalse(action.printer_output_tray_id)
 
     def test_onchange_printer_tray_id_not_empty(self):
-        printer = self.env["printing.printer"].create(
-            {
-                "name": "Printer",
-                "system_name": "Sys Name",
-                "default": True,
-                "status": "unknown",
-                "status_message": "Msg",
-                "model": "res.users",
-                "location": "Location",
-                "uri": "URI",
-            }
-        )
+        printer = self.new_printer()
         input_tray = self.env["printing.tray.input"].create(
             {
                 "name": "Tray",

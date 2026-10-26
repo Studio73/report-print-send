@@ -1,26 +1,15 @@
 # Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tests.common import TransactionCase
+from .common import ReportToPrinterCommon
 
 model = "odoo.addons.base_report_to_printer.models.printing_server"
 
 
-class TestPrintingTray(TransactionCase):
+class TestPrintingTray(ReportToPrinterCommon):
     def setUp(self):
         super().setUp()
-        self.printer = self.env["printing.printer"].create(
-            {
-                "name": "Printer",
-                "system_name": "Sys Name",
-                "default": True,
-                "status": "unknown",
-                "status_message": "Msg",
-                "model": "res.users",
-                "location": "Location",
-                "uri": "URI",
-            }
-        )
+        self.printer = self.new_printer()
         self.tray_vals = {
             "name": "Tray",
             "system_name": "TrayName",

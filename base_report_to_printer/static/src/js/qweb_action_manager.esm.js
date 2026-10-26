@@ -1,8 +1,16 @@
 import {registry} from "@web/core/registry";
 
+export function isSupportedReportType(reportType) {
+    return (
+        reportType === "qweb-pdf" ||
+        reportType.startsWith("qweb-pdf-") ||
+        reportType === "qweb-text"
+    );
+}
+
 async function genericReportActionHandler(action, options, env) {
     const orm = env.services.orm;
-    if (!["qweb-pdf", "qweb-text"].includes(action.report_type)) {
+    if (!isSupportedReportType(action.report_type)) {
         return false;
     }
 

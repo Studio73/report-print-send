@@ -1,26 +1,18 @@
 # Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import new_test_user
+
+from .common import ReportToPrinterCommon
 
 
-class TestPrintingPrinterBase(TransactionCase):
+class TestPrintingPrinterBase(ReportToPrinterCommon):
     def setUp(self):
         super().setUp()
         self.Model = self.env["printing.printer"]
-        self.printer_vals = {
-            "name": "Printer",
-            "system_name": "Sys Name",
-            "default": True,
-            "status": "unknown",
-            "status_message": "Msg",
-            "model": "res.users",
-            "location": "Location",
-            "uri": "URI",
-        }
 
     def new_record(self):
-        return self.Model.create(self.printer_vals)
+        return self.new_printer()
 
     def test_option_tray(self):
         self.assertEqual(
@@ -83,3 +75,24 @@ class TestPrintingPrinterBase(TransactionCase):
         self.assertTrue(printer.default)
         printer.unset_default()
         self.assertFalse(printer.default)
+
+    def test_user_and_manager_permissions(self):
+        printer = self.new_record()
+        user = new_test_user(
+            self.env,
+            login="printer-user",
+            groups="base.group_user",
+        )
+        manager = new_test_user(
+            self.env,
+            login="printer-manager",
+            groups="base.group_erp_manager",
+        )
+        user_printer = printer.with_user(user)
+        self.assertTrue(user_printer.has_access("read"))
+        self.assertFalse(user_printer.has_access("create"))
+        self.assertFalse(user_printer.has_access("write"))
+        self.assertFalse(user_printer.has_access("unlink"))
+        manager_printer = printer.with_user(manager)
+        for operation in ("read", "create", "write", "unlink"):
+            self.assertTrue(manager_printer.has_access(operation))

@@ -1,30 +1,17 @@
 from unittest import mock
 
 from odoo import fields
-from odoo.tests.common import TransactionCase
+
+from .common import ReportToPrinterCommon
 
 
-class TestPrintingJob(TransactionCase):
+class TestPrintingJob(ReportToPrinterCommon):
     def setUp(self):
         super().setUp()
         self.Job = self.env["printing.job"]
-        self.Printer = self.env["printing.printer"]
-        self.printer_vals = {
-            "name": "Printer",
-            "system_name": "Sys Name",
-            "default": True,
-            "status": "unknown",
-            "status_message": "Msg",
-            "model": "res.users",
-            "location": "Location",
-            "uri": "URI",
-        }
         self.job_vals = {
             "time_at_creation": fields.Datetime.now(),
         }
-
-    def new_printer(self):
-        return self.Printer.create(self.printer_vals)
 
     def new_job(self, printer, extra_vals=None):
         vals = {**self.job_vals, **(extra_vals or {})}

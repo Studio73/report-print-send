@@ -2,13 +2,16 @@
 # Copyright 2017 Tecnativa - Jairo Llopis
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from types import SimpleNamespace
 from unittest import mock
 
 from odoo import exceptions
-from odoo.tests import common
+
+from ..models.ir_actions_report import _get_printer_doc_format, _get_render_type
+from .common import ReportToPrinterCommon
 
 
-class TestReport(common.HttpCase):
+class TestReport(ReportToPrinterCommon):
     def setUp(self):
         super().setUp()
         self.Model = self.env["ir.actions.report"].with_context(
@@ -87,20 +90,6 @@ class TestReport(common.HttpCase):
     def new_record(self):
         return self.Model.create(self.report_vals)
 
-    def new_printer(self):
-        return self.env["printing.printer"].create(
-            {
-                "name": "Printer",
-                "system_name": "Sys Name",
-                "default": True,
-                "status": "unknown",
-                "status_message": "Msg",
-                "model": "res.users",
-                "location": "Location",
-                "uri": "URI",
-            }
-        )
-
     def test_can_print_report_context_skip(self):
         rec_id = self.new_record().with_context(must_skip_send_to_printer=True)
         res = rec_id._can_print_report({"action": "server"}, True, True)
@@ -113,6 +102,17 @@ class TestReport(common.HttpCase):
     def test_can_print_report_false(self):
         res = self.new_record()._can_print_report({"action": "server"}, True, False)
         self.assertFalse(res)
+
+    def test_pdf_engine_report_types(self):
+        for report_type in ("qweb-pdf-pdfium", "qweb-pdf-wkhtmltopdf"):
+            self.assertEqual(_get_render_type(report_type), "pdf")
+            self.assertEqual(_get_printer_doc_format(report_type), "qweb-pdf")
+        self.assertEqual(
+            self.Model._get_pdf_engine(SimpleNamespace(report_type="qweb-pdf-pdfium")),
+            "pdfium",
+        )
+        self.assertEqual(_get_render_type("qweb-text"), "text")
+        self.assertIsNone(_get_render_type("qweb-html"))
 
     def test_render_qweb_pdf_not_printable(self):
         with mock.patch(

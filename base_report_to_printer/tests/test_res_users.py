@@ -1,10 +1,10 @@
 # Copyright 2016 LasLabs Inc.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tests import common
+from .common import ReportToPrinterCommon
 
 
-class TestResUsers(common.TransactionCase):
+class TestResUsers(ReportToPrinterCommon):
     def setUp(self):
         super().setUp()
         self.user_vals = {"name": "Test", "login": "login"}

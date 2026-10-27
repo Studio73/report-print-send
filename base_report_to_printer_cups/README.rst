@@ -21,13 +21,13 @@ Report to printer CUPS
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Freport--print--send-lightgray.png?logo=github
-    :target: https://github.com/OCA/report-print-send/tree/19.0/base_report_to_printer_cups
+    :target: https://github.com/OCA/report-print-send/tree/20.0/base_report_to_printer_cups
     :alt: OCA/report-print-send
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/report-print-send-19-0/report-print-send-19-0-base_report_to_printer_cups
+    :target: https://translation.odoo-community.org/projects/report-print-send-20-0/report-print-send-20-0-base_report_to_printer_cups
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/report-print-send&target_branch=19.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/report-print-send&target_branch=20.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -41,17 +41,18 @@ instead of downloading a PDF.
 
 Main features:
 
-- Manage CUPS servers from the Odoo backend.
-- Synchronize available printers and trays with CUPS.
-- Define default printing behavior globally, per user, per report, or
-  per user and report.
-- Test printer connectivity with a **Print Test Page** action.
+-  Manage CUPS servers from the Odoo backend.
+-  Synchronize available printers and trays with CUPS.
+-  Define default printing behavior globally, per user, per report, or
+   per user and report.
+-  Test printer connectivity with a **Print Test Page** action.
 
 Typical usage:
 
-- Send reports directly to CUPS printers.
-- Configure dedicated trays for pre-printed forms such as payment slips.
-- Allow each user to define their own default printer preferences.
+-  Send reports directly to CUPS printers.
+-  Configure dedicated trays for pre-printed forms such as payment
+   slips.
+-  Allow each user to define their own default printer preferences.
 
 **Table of contents**
 
@@ -84,10 +85,10 @@ Configure base_report_to_printer_cups
    printers from CUPS.
 3. Set default printers or trays:
 
-   - Globally in *Settings > Printing > Reports*
-   - Per user in *User Preferences*
-   - Per report in *Reports configuration*
-   - Per user and report in *Specific report actions per user*
+   -  Globally in *Settings > Printing > Reports*
+   -  Per user in *User Preferences*
+   -  Per report in *Reports configuration*
+   -  Per user and report in *Specific report actions per user*
 
 4. Use **Print Test Page** on a printer form to check connectivity and
    configuration.
@@ -97,16 +98,16 @@ Usage
 
 Guidelines for use:
 
-   - To update the CUPS printers in *Settings > Printing > Update
-     Printers from CUPS*
-   - To print a report on a specific printer or tray, you can change
-     these in *Settings > Printing > Reports* to define default
-     behaviour.
-   - To print a report on a specific printer and/or tray for a user, you
-     can change these in *Settings > Printing > Reports* in *Specific
-     actions per user*
-   - Users may also select a default action, printer or tray in their
-     preferences.
+   -  To update the CUPS printers in *Settings > Printing > Update
+      Printers from CUPS*
+   -  To print a report on a specific printer or tray, you can change
+      these in *Settings > Printing > Reports* to define default
+      behaviour.
+   -  To print a report on a specific printer and/or tray for a user,
+      you can change these in *Settings > Printing > Reports* in
+      *Specific actions per user*
+   -  Users may also select a default action, printer or tray in their
+      preferences.
 
 When no tray is configured for a report and a user, the default tray
 setup on the CUPS server is used.
@@ -114,9 +115,9 @@ setup on the CUPS server is used.
 Known issues / Roadmap
 ======================
 
-- With threaded printing there's no download fallback when the issue
-  isn't detected by the CUPS Odoo backend. To able to do it, we would
-  need to notify the bus or use web_notify for it.
+-  With threaded printing there's no download fallback when the issue
+   isn't detected by the CUPS Odoo backend. To able to do it, we would
+   need to notify the bus or use web_notify for it.
 
 Changelog
 =========
@@ -124,12 +125,12 @@ Changelog
 13.0.1.0.0 (2019-09-30)
 -----------------------
 
-- [RELEASE] Port from V12.
+-  [RELEASE] Port from V12.
 
 12.0.1.0.0 (2018-02-04)
 -----------------------
 
-- [RELEASE] Port from V11.
+-  [RELEASE] Port from V11.
 
 Bug Tracker
 ===========
@@ -137,7 +138,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/report-print-send/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/report-print-send/issues/new?body=module:%20base_report_to_printer_cups%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/report-print-send/issues/new?body=module:%20base_report_to_printer_cups%0Aversion:%2020.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -157,25 +158,28 @@ Authors
 Contributors
 ------------
 
-- Ferran Pegueroles <ferran@pegueroles.com>
-- Albert Cervera i Areny <albert@nan-tic.com>
-- Davide Corio <davide.corio@agilebg.com>
-- Lorenzo Battistini <lorenzo.battistini@agilebg.com>
-- Yannick Vaucher <yannick.vaucher@camptocamp.com>
-- Lionel Sausin <ls@numerigraphe.com>
-- Guewen Baconnier <guewen.baconnier@camptocamp.com>
-- Dave Lasley <dave@laslabs.com>
-- Sylvain Garancher <sylvain.garancher@syleam.fr>
-- Jairo Llopis <jairo.llopis@tecnativa.com>
-- Graeme Gellatly <graeme@o4sb.com>
-- Rod Schouteden <rod@schout-it.be>
-- Alexandre Fayolle <alexandre.fayolle@camptocamp.com>
-- Matias Peralta <mnp@adhoc.com.ar>
-- Hughes Damry <hughes.damry@acsone.eu>
-- Akim Juillerat <akim.juillerat@camptocamp.com>
-- Jacques-Etienne Baudoux (BCIM) <je@bcim.be>
-- Tris Doan <tridm@trobz.com>
-- Miquel Alzanillas <miquel.alzanillas@nagarro.com>
+-  Ferran Pegueroles <ferran@pegueroles.com>
+-  Albert Cervera i Areny <albert@nan-tic.com>
+-  Davide Corio <davide.corio@agilebg.com>
+-  Lorenzo Battistini <lorenzo.battistini@agilebg.com>
+-  Yannick Vaucher <yannick.vaucher@camptocamp.com>
+-  Lionel Sausin <ls@numerigraphe.com>
+-  Guewen Baconnier <guewen.baconnier@camptocamp.com>
+-  Dave Lasley <dave@laslabs.com>
+-  Sylvain Garancher <sylvain.garancher@syleam.fr>
+-  Jairo Llopis <jairo.llopis@tecnativa.com>
+-  Graeme Gellatly <graeme@o4sb.com>
+-  Rod Schouteden <rod@schout-it.be>
+-  Alexandre Fayolle <alexandre.fayolle@camptocamp.com>
+-  Matias Peralta <mnp@adhoc.com.ar>
+-  Hughes Damry <hughes.damry@acsone.eu>
+-  Akim Juillerat <akim.juillerat@camptocamp.com>
+-  Jacques-Etienne Baudoux (BCIM) <je@bcim.be>
+-  Tris Doan <tridm@trobz.com>
+-  Miquel Alzanillas <miquel.alzanillas@nagarro.com>
+-  `Studio73 <https://www.studio73.es>`__:
+
+   -  Pablo Cortés
 
 Other credits
 -------------
@@ -195,6 +199,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/report-print-send <https://github.com/OCA/report-print-send/tree/19.0/base_report_to_printer_cups>`_ project on GitHub.
+This module is part of the `OCA/report-print-send <https://github.com/OCA/report-print-send/tree/20.0/base_report_to_printer_cups>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

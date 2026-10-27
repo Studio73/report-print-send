@@ -3,13 +3,15 @@
 
 from odoo.addons.base_report_to_printer.tests.test_res_users import TestResUsers
 
+from .common import ReportToPrinterCupsCommon
 
-class TestResUsersCups(TestResUsers):
+
+class TestResUsersCups(ReportToPrinterCupsCommon, TestResUsers):
     def setUp(self):
         super().setUp()
         self.user_vals = {"name": "Test", "login": "login"}
 
-    def test_onchange_printer_tray_id_not_empty(self):
+    def test_01_onchange_printer_tray_id_not_empty(self):
         server = self.env["printing.server"].create({})
         printer = self.env["printing.printer"].create(
             {

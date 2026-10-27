@@ -2,12 +2,15 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import errno
+import os
 import tempfile
 from unittest import mock
 
 from odoo.addons.base_report_to_printer.tests.test_printing_printer_tray import (
     TestPrintingPrinter,
 )
+
+from .common import ReportToPrinterCupsCommon
 
 model = "odoo.addons.base_report_to_printer_cups.models.printing_printer"
 server_model = "odoo.addons.base_report_to_printer_cups.models.printing_server"
@@ -48,7 +51,7 @@ ppd_output_slot_footer = """
 """
 
 
-class TestPrintingPrinterCups(TestPrintingPrinter):
+class TestPrintingPrinterCups(ReportToPrinterCupsCommon, TestPrintingPrinter):
     def setUp(self):
         super().setUp()
         self.server = self.env["printing.server"].create({})
@@ -79,14 +82,19 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         return ppd_contents
 
     def mock_cups_ppd(self, cups, file_name=None, input_slots=None):
-        if file_name is None:
-            fd, file_name = tempfile.mkstemp()
+        if file_name is False:
+            ppd_path = ""
+        else:
+            if file_name is None:
+                fd, file_name = tempfile.mkstemp()
+                os.close(fd)
 
-        ppd_contents = self.build_ppd(input_slots)
-        with open(file_name, "w") as fp:
-            fp.write(ppd_contents)
+            ppd_contents = self.build_ppd(input_slots)
+            with open(file_name, "w") as fp:
+                fp.write(ppd_contents)
+            ppd_path = file_name
 
-        cups.Connection().getPPD3.return_value = (200, 0, file_name)
+        cups.Connection().getPPD3.return_value = (200, 0, ppd_path)
         cups.Connection().getPrinters.return_value = {
             self.printer.system_name: {
                 "printer-info": "info",
@@ -95,7 +103,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         }
 
     @mock.patch(f"{server_model}.cups")
-    def test_update_printers(self, cups):
+    def test_01_update_printers(self, cups):
         """
         Check that the update_printers method calls _prepare_update_from_cups
         """
@@ -107,7 +115,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         self.assertEqual(self.printer.name, "My custom name")
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups_no_ppd(self, cups):
+    def test_02_prepare_update_from_cups_no_ppd(self, cups):
         self.mock_cups_ppd(cups, file_name=False)
         connection = cups.Connection()
         cups_printer = connection.getPrinters()[self.printer.system_name]
@@ -115,8 +123,9 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         self.assertNotIn("input_tray_ids", vals)
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups_empty_ppd(self, cups):
+    def test_03_prepare_update_from_cups_empty_ppd(self, cups):
         fd, file_name = tempfile.mkstemp()
+        os.close(fd)
         self.mock_cups_ppd(cups, file_name=file_name)
         with open(file_name, "w") as fp:
             fp.write(ppd_header)
@@ -127,7 +136,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
 
     @mock.patch(f"{server_model}.cups")
     @mock.patch("os.unlink")
-    def test_prepare_update_from_cups_unlink_error(self, os_unlink, cups):
+    def test_04_prepare_update_from_cups_unlink_error(self, os_unlink, cups):
         os_unlink.side_effect = OSError(errno.EIO, "Error")
         self.mock_cups_ppd(cups)
         connection = cups.Connection()
@@ -137,7 +146,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
 
     @mock.patch(f"{server_model}.cups")
     @mock.patch("os.unlink")
-    def test_prepare_update_from_cups_unlink_error_enoent(self, os_unlink, cups):
+    def test_05_prepare_update_from_cups_unlink_error_enoent(self, os_unlink, cups):
         os_unlink.side_effect = OSError(errno.ENOENT, "Error")
         self.mock_cups_ppd(cups)
         connection = cups.Connection()
@@ -149,7 +158,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         )
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups(self, cups):
+    def test_06_prepare_update_from_cups(self, cups):
         self.mock_cups_ppd(cups)
         connection = cups.Connection()
         cups_printer = connection.getPrinters()[self.printer.system_name]
@@ -160,7 +169,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         )
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups_with_multiple_trays(self, cups):
+    def test_07_prepare_update_from_cups_with_multiple_trays(self, cups):
         self.mock_cups_ppd(cups, input_slots=[{"name": "Tray1", "text": "Tray 1"}])
         connection = cups.Connection()
         cups_printer = connection.getPrinters()[self.printer.system_name]
@@ -174,7 +183,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         )
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups_already_known_trays(self, cups):
+    def test_08_prepare_update_from_cups_already_known_trays(self, cups):
         self.mock_cups_ppd(cups, input_slots=[{"name": "Tray1", "text": "Tray 1"}])
         connection = cups.Connection()
         cups_printer = connection.getPrinters()[self.printer.system_name]
@@ -188,7 +197,7 @@ class TestPrintingPrinterCups(TestPrintingPrinter):
         )
 
     @mock.patch(f"{server_model}.cups")
-    def test_prepare_update_from_cups_unknown_trays(self, cups):
+    def test_09_prepare_update_from_cups_unknown_trays(self, cups):
         self.mock_cups_ppd(cups)
         connection = cups.Connection()
         cups_printer = connection.getPrinters()[self.printer.system_name]

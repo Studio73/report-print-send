@@ -5,7 +5,8 @@ import logging
 from unittest import mock
 
 from odoo.exceptions import UserError
-from odoo.tests.common import TransactionCase
+
+from .common import ReportToPrinterCupsCommon
 
 model = "odoo.addons.base_report_to_printer_cups.models.printing_server"
 
@@ -14,7 +15,7 @@ class StopTest(Exception):
     pass
 
 
-class TestPrintingPrinterWizard(TransactionCase):
+class TestPrintingPrinterWizard(ReportToPrinterCupsCommon):
     def setUp(self):
         super().setUp()
         self.Model = self.env["printing.printer.update.wizard"]
@@ -39,20 +40,20 @@ class TestPrintingPrinterWizard(TransactionCase):
         }
 
     @mock.patch(f"{model}.cups")
-    def test_action_ok_inits_connection(self, cups):
+    def test_01_action_ok_inits_connection(self, cups):
         """It should initialize CUPS connection"""
         self.Model.action_ok()
         cups.Connection.assert_any_call(host=self.server.address, port=self.server.port)
 
     @mock.patch(f"{model}.cups")
-    def test_action_ok_gets_printers(self, cups):
+    def test_02_action_ok_gets_printers(self, cups):
         """It should get printers from CUPS"""
         cups.Connection().getPrinters.return_value = {"sys_name": self.printer_vals}
         cups.Connection().getPPD3.return_value = (200, 0, "")
         self.Model.action_ok()
         cups.Connection().getPrinters.assert_any_call()
 
-    def test_action_ok_raises_warning_on_error(self):
+    def test_03_action_ok_raises_warning_on_error(self):
         """It should raise Warning on any error"""
         with (
             mock.patch(f"{model}.cups") as cups,
@@ -65,7 +66,7 @@ class TestPrintingPrinterWizard(TransactionCase):
             self.assertEqual(logs.records[0].levelno, logging.WARNING)
 
     @mock.patch(f"{model}.cups")
-    def test_action_ok_creates_new_printer(self, cups):
+    def test_04_action_ok_creates_new_printer(self, cups):
         """It should create new printer w/ proper vals"""
         cups.Connection().getPrinters.return_value = {"sys_name": self.printer_vals}
         cups.Connection().getPPD3.return_value = (200, 0, "")
@@ -84,7 +85,7 @@ class TestPrintingPrinterWizard(TransactionCase):
                 self.assertEqual(val, rec_id[key])
 
     @mock.patch(f"{model}.cups")
-    def test_action_ok_skips_existing_printer(self, cups):
+    def test_05_action_ok_skips_existing_printer(self, cups):
         """It should not recreate existing printers"""
         cups.Connection().getPrinters.return_value = {"sys_name": self.printer_vals}
         cups.Connection().getPPD3.return_value = (200, 0, "")

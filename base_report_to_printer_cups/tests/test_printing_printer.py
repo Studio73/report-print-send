@@ -7,17 +7,23 @@ from odoo.addons.base_report_to_printer.tests.test_printing_printer import (
     TestPrintingPrinterBase,
 )
 
+from .common import ReportToPrinterCupsCommon
 
-class TestPrintingPrinterBaseCups(TestPrintingPrinterBase):
+
+class TestPrintingPrinterBaseCups(ReportToPrinterCupsCommon, TestPrintingPrinterBase):
     def setUp(self):
         super().setUp()
 
         self.server = self.env["printing.server"].create({})
-        self.printer_vals.update({"server_id": self.server.id, "backend": "cups"})
+        self.printer_values = {
+            **self.printer_values,
+            "server_id": self.server.id,
+            "backend": "cups",
+        }
 
     @mock.patch("cups.Connection")
     @mock.patch("os.remove", side_effect=FileNotFoundError)
-    def test_print_file(self, mock_remove, cups_conn_mock):
+    def test_01_print_file(self, mock_remove, cups_conn_mock):
         import logging
 
         self.printer = self.new_record()
@@ -31,13 +37,13 @@ class TestPrintingPrinterBaseCups(TestPrintingPrinterBase):
         self.assertEqual(logs.records[0].levelno, logging.WARNING)
 
     @mock.patch("cups.Connection")
-    def test_cancel_all_jobs(self, cups_conn_mock):
+    def test_02_cancel_all_jobs(self, cups_conn_mock):
         self.printer = self.new_record()
         cups_conn_mock.return_value.cancelAllJobs.return_value = True
         self.assertTrue(self.printer.cancel_all_jobs())
 
     @mock.patch("cups.Connection")
-    def test_enable_disable_printer(self, cups_conn_mock):
+    def test_03_enable_disable_printer(self, cups_conn_mock):
         self.printer = self.new_record()
         cups_conn_mock.return_value.enablePrinter.return_value = True
         cups_conn_mock.return_value.disablePrinter.return_value = True
@@ -45,7 +51,7 @@ class TestPrintingPrinterBaseCups(TestPrintingPrinterBase):
         self.assertTrue(self.printer.disable())
 
     @mock.patch("cups.Connection")
-    def test_print_test_page(self, cups_conn_mock):
+    def test_04_print_test_page(self, cups_conn_mock):
         self.printer = self.new_record()
         cups_conn_mock.return_value.printTestPage.return_value = True
         self.assertTrue(self.printer.print_test_page())

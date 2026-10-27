@@ -17,3 +17,5 @@
 - Jacques-Etienne Baudoux (BCIM) \<<je@bcim.be>\>
 - Tris Doan \<<tridm@trobz.com>\>
 - Miquel Alzanillas \<<miquel.alzanillas@nagarro.com>\>
+- [Studio73](https://www.studio73.es):
+  - Pablo Cortés

@@ -9,10 +9,12 @@ from odoo.addons.base_report_to_printer.tests.test_ir_actions_report import (
     TestIrActionsReportXml,
 )
 
+from .common import ReportToPrinterCupsCommon
+
 model = "odoo.addons.base.models.ir_actions_report.IrActionsReport"
 
 
-class TestIrActionsReportCups(TestIrActionsReportXml):
+class TestIrActionsReportCups(ReportToPrinterCupsCommon, TestIrActionsReportXml):
     def setUp(self):
         super().setUp()
         self.cups_server = self.env["printing.server"].create({"name": "CUPS Server"})
@@ -37,7 +39,7 @@ class TestIrActionsReportCups(TestIrActionsReportXml):
             }
         )
 
-    def test_print_in_new_thread(self):
+    def test_01_print_in_new_thread(self):
         """It should return the action and printer from printing action in other
         thread"""
         report = self.Model.search([], limit=1)

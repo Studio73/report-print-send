@@ -5,13 +5,15 @@ import logging
 from unittest import mock
 
 from odoo import fields
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import new_test_user
+
+from .common import ReportToPrinterCupsCommon
 
 model = "odoo.addons.base_report_to_printer_cups.models.printing_server"
 model_base = "odoo.models.BaseModel"
 
 
-class TestPrintingServer(TransactionCase):
+class TestPrintingServer(ReportToPrinterCupsCommon):
     def setUp(self):
         super().setUp()
         self.Model = self.env["printing.server"]
@@ -45,7 +47,7 @@ class TestPrintingServer(TransactionCase):
         values["printer_id"] = printer.id
         return self.env["printing.job"].create(values)
 
-    def test_update_printers_error(self):
+    def test_01_update_printers_error(self):
         """It should catch any exception from CUPS and update status"""
         with (
             mock.patch(f"{model}.cups") as cups,
@@ -59,28 +61,28 @@ class TestPrintingServer(TransactionCase):
             self.assertEqual(logs.records[0].levelno, logging.WARNING)
 
     @mock.patch(f"{model}.cups")
-    def test_update_printers_inits_cups(self, cups):
+    def test_02_update_printers_inits_cups(self, cups):
         """It should init CUPS connection"""
         self.new_printer()
         self.Model.update_printers()
         cups.Connection.assert_any_call(host=self.server.address, port=self.server.port)
 
     @mock.patch(f"{model}.cups")
-    def test_update_printers_gets_all_printers(self, cups):
+    def test_03_update_printers_gets_all_printers(self, cups):
         """It should get all printers from CUPS server"""
         self.new_printer()
         self.Model.update_printers()
         cups.Connection().getPrinters.assert_any_call()
 
     @mock.patch(f"{model}.cups")
-    def test_update_printers_search(self, cups):
+    def test_04_update_printers_search(self, cups):
         """It should search all when no domain"""
         with mock.patch(f"{model_base}.search") as search:
             self.Model.update_printers()
             search.assert_any_call([])
 
     @mock.patch(f"{model}.cups")
-    def test_update_printers_search_domain(self, cups):
+    def test_05_update_printers_search_domain(self, cups):
         """It should use specific domain for search"""
         with mock.patch(f"{model_base}.search") as search:
             expect = [("id", ">", 0)]
@@ -88,7 +90,7 @@ class TestPrintingServer(TransactionCase):
             search.assert_any_call(expect)
 
     @mock.patch(f"{model}.cups")
-    def test_update_printers_update_unavailable(self, cups):
+    def test_06_update_printers_update_unavailable(self, cups):
         """It should update status when printer is unavailable"""
         rec_id = self.new_printer()
         cups.Connection().getPrinters().get.return_value = False
@@ -96,7 +98,7 @@ class TestPrintingServer(TransactionCase):
         self.assertEqual("unavailable", rec_id.status)
 
     @mock.patch(f"{model}.cups")
-    def test_update_archived_printers(self, cups):
+    def test_07_update_archived_printers(self, cups):
         """It should update status even if printer is archived"""
         rec_id = self.new_printer()
         rec_id.action_unarchive()
@@ -109,7 +111,7 @@ class TestPrintingServer(TransactionCase):
         )
 
     @mock.patch(f"{model}.cups")
-    def test_update_jobs_cron(self, cups):
+    def test_08_update_jobs_cron(self, cups):
         """It should get all jobs from CUPS server"""
         self.new_printer()
         self.Model.action_update_jobs()
@@ -131,7 +133,7 @@ class TestPrintingServer(TransactionCase):
         )
 
     @mock.patch(f"{model}.cups")
-    def test_update_jobs_button(self, cups):
+    def test_09_update_jobs_button(self, cups):
         """It should get all jobs from CUPS server"""
         self.new_printer()
         self.server.action_update_jobs()
@@ -152,7 +154,7 @@ class TestPrintingServer(TransactionCase):
             ],
         )
 
-    def test_update_jobs_error(self):
+    def test_10_update_jobs_error(self):
         """It should catch any exception from CUPS and update status"""
         with (
             mock.patch(f"{model}.cups") as cups,
@@ -168,7 +170,7 @@ class TestPrintingServer(TransactionCase):
             self.assertEqual(logs.records[0].levelno, logging.WARNING)
 
     @mock.patch(f"{model}.cups")
-    def test_update_jobs_uncompleted(self, cups):
+    def test_11_update_jobs_uncompleted(self, cups):
         """
         It should search which jobs have been completed since last update
         """
@@ -193,7 +195,7 @@ class TestPrintingServer(TransactionCase):
         )
 
     @mock.patch(f"{model}.cups")
-    def test_update_jobs(self, cups):
+    def test_12_update_jobs(self, cups):
         """
         It should update all jobs, known or not
         """
@@ -216,3 +218,32 @@ class TestPrintingServer(TransactionCase):
         self.assertEqual(completed_job.job_state, "completed")
         self.assertEqual(purged_job.active, False)
         self.assertEqual(new_job.job_state, "processing")
+
+    def test_13_access_rules(self):
+        user = new_test_user(self.env, login="cups-user", groups="base.group_user")
+        manager = new_test_user(
+            self.env,
+            login="cups-manager",
+            groups="base.group_erp_manager",
+        )
+        system = new_test_user(
+            self.env,
+            login="cups-system",
+            groups="base.group_system",
+        )
+        user_server = self.server.with_user(user)
+        manager_server = self.server.with_user(manager)
+        self.assertTrue(user_server.has_access("read"))
+        self.assertFalse(user_server.has_access("write"))
+        for operation in ("read", "create", "write", "unlink"):
+            self.assertTrue(manager_server.has_access(operation))
+            self.assertTrue(
+                self.env["printing.printer.update.wizard"]
+                .with_user(manager)
+                .has_access(operation)
+            )
+            self.assertTrue(
+                self.env["printing.printer.update.wizard"]
+                .with_user(system)
+                .has_access(operation)
+            )

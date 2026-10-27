@@ -1,7 +1,9 @@
 from odoo.addons.base_report_to_printer.tests.test_report import TestReport
 
+from .common import ReportToPrinterCupsCommon
 
-class TestReportCups(TestReport):
+
+class TestReportCups(ReportToPrinterCupsCommon, TestReport):
     def setUp(self):
         super().setUp()
         # Ensure the printer uses CUPS backend and is in error state

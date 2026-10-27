@@ -5,12 +5,13 @@ import logging
 from unittest import mock
 
 from odoo import fields
-from odoo.tests.common import TransactionCase
+
+from .common import ReportToPrinterCupsCommon
 
 model = "odoo.addons.base_report_to_printer_cups.models.printing_server"
 
 
-class TestPrintingJob(TransactionCase):
+class TestPrintingJob(ReportToPrinterCupsCommon):
     def setUp(self):
         super().setUp()
         self.Model = self.env["printing.server"]
@@ -44,7 +45,7 @@ class TestPrintingJob(TransactionCase):
         values["printer_id"] = printer.id
         return self.env["printing.job"].create(values)
 
-    def test_cancel_job_error(self):
+    def test_01_cancel_job_error(self):
         """It should catch any exception from CUPS and update status"""
         with (
             mock.patch(f"{model}.cups") as cups,
@@ -61,7 +62,7 @@ class TestPrintingJob(TransactionCase):
             self.assertEqual(logs.records[0].levelno, logging.WARNING)
 
     @mock.patch(f"{model}.cups")
-    def test_cancel_job(self, cups):
+    def test_02_cancel_job(self, cups):
         """It should catch any exception from CUPS and update status"""
         printer = self.new_printer()
         job = self.new_job(printer)
